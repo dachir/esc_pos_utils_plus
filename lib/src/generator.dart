@@ -57,7 +57,7 @@ class Generator {
     return charsPerLine;
   }
 
-  Uint8List _encode(String text, {bool isKanji = false}) {
+  Uint8List _encode(String text, {bool isKanji = false, bool isUtf8 = false}) {
     // replace some non-ascii characters
     text = text
         .replaceAll("’", "'")
@@ -65,7 +65,9 @@ class Generator {
         .replaceAll("»", '"')
         .replaceAll(" ", ' ')
         .replaceAll("•", '.');
-    if (!isKanji) {
+      if (isUtf8) {
+      return Uint8List.fromList(utf8.encode(text));
+    } else if (!isKanji) {
       return latin1.encode(text);
     } else {
       return Uint8List.fromList(gbk_bytes.encode(text));
@@ -347,11 +349,12 @@ class Generator {
     int linesAfter = 0,
     bool containsChinese = false,
     int? maxCharsPerLine,
+    bool isUtf8 = false,
   }) {
     List<int> bytes = [];
     if (!containsChinese) {
       bytes += _text(
-        _encode(text, isKanji: containsChinese),
+        _encode(text, isKanji: containsChinese, isUtf8: isUtf8),
         styles: styles,
         isKanji: containsChinese,
         maxCharsPerLine: maxCharsPerLine,
@@ -780,6 +783,7 @@ class Generator {
     bool isKanji = false,
     int colWidth = 12,
     int? maxCharsPerLine,
+    bool? isUtf8 = false,
   }) {
     List<int> bytes = [];
     if (colInd != null) {
