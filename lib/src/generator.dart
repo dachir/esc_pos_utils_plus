@@ -66,7 +66,7 @@ class Generator {
         .replaceAll(" ", ' ')
         .replaceAll("•", '.');
       if (isUtf8) {
-      return utf8.encode(text);
+      return Uint8List.fromList(utf8.encode(text));
     } else if (!isKanji) {
       return latin1.encode(text);
     } else {
